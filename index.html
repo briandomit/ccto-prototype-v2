@@ -1452,7 +1452,16 @@ function renderProjectsTable() {
       <td class="table-cell">${p.assigned}</td>
       <td class="table-cell">${p.bidDate}</td>
       <td class="table-cell">${p.location}</td>
-      <td class="p-2.5" style="white-space:nowrap;display:flex;align-items:center;justify-content:flex-end"><span class="row-nav-chevron" style="color:var(--neutral-400);font-size:18px;opacity:0;transition:opacity 120ms ease;margin-right:4px">&#8250;</span><div class="meatball" role="button" aria-label="More options" onclick="event.stopPropagation();showProjectMenu(event, ${p.id})"><i class="fa-solid fa-ellipsis-vertical"></i></div></td>
+      <td class="text-right whitespace-nowrap" style="padding:10px 0 10px 10px">
+        <div class="inline-actions flex items-center justify-end gap-5">
+          <span class="row-nav-chevron" style="color:var(--neutral-400);font-size:18px;opacity:0;transition:opacity 120ms ease;margin-right:4px">&#8250;</span>
+          <a href="#" class="text-muted hover:text-primary has-tip" data-tip="View Documents" onclick="event.preventDefault();event.stopPropagation();_projAction(${p.id},'viewDocuments')"><i class="fa-solid fa-folder-open"></i></a>
+          <a href="#" class="text-muted hover:text-primary has-tip" data-tip="Takeoff" onclick="event.preventDefault();event.stopPropagation();_projAction(${p.id},'takeoff')"><i class="fa-solid fa-ruler-vertical"></i></a>
+          <a href="#" class="text-muted hover:text-primary has-tip" data-tip="Move to" onclick="event.preventDefault();event.stopPropagation();_projAction(${p.id},'moveTo')"><i class="fa-solid fa-arrow-right-arrow-left"></i></a>
+          <a href="#" class="text-muted hover:text-primary has-tip" data-tip="Duplicate" onclick="event.preventDefault();event.stopPropagation();_projAction(${p.id},'duplicate')"><i class="fa-regular fa-copy"></i></a>
+          <a href="#" class="text-muted hover:text-primary has-tip has-tip-right" data-tip="Archive" onclick="event.preventDefault();event.stopPropagation();_projAction(${p.id},'archive')"><i class="fa-solid fa-box-archive"></i></a>
+        </div>
+      </td>
     </tr>
   `).join('');
 }
@@ -2357,6 +2366,19 @@ function showProjectMenu(e, projectId) {
     <div class="ctx-menu-item" onclick="menuAction('archive')"><i class="fa-solid fa-box-archive text-sm text-muted mr-3"></i>Archive</div>
   `;
   positionMenu(menu, e);
+}
+function _projAction(projectId, action) {
+  const proj = projects.find(p => p.id === projectId);
+  if (!proj) return;
+  if (action === 'viewDocuments') navigateToDocuments(projectId);
+  else if (action === 'takeoff') { state.selectedProject = proj; goToTakeoff(); }
+  else if (action === 'moveTo') {
+    _moveStatusTarget = proj;
+    document.querySelectorAll('input[name="move-status-radio"]').forEach(r => { r.checked = (r.value === proj.status); });
+    openBlueprintModal('modal-move-status');
+  }
+  else if (action === 'duplicate') { projects.push({ ...proj, id: projects.length + 1, number: '2024-' + (135 + projects.length), name: proj.name + ' (Copy)' }); renderProjectsTable(); }
+  else if (action === 'archive') { proj.status = 'archived'; renderProjectsTable(); }
 }
 
 function positionMenu(menu, e) {
