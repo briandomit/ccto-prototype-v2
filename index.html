@@ -326,7 +326,7 @@ table th.p-2\.5, table td.p-2\.5 { padding: 17px 10px !important; }
 .has-tip::after { content: attr(data-tip); position: absolute; bottom: calc(100% + 5px); left: 50%; transform: translateX(-50%); background: var(--neutral-600); color: #fff; font-size: 11px; font-family: 'Montserrat', sans-serif; padding: 4px 8px; border-radius: 4px; white-space: nowrap; opacity: 0; pointer-events: none; transition: opacity 0ms; z-index: 100; }
 .has-tip:hover::after { opacity: 1; }
 .has-tip-right::after { left: auto; right: 0; transform: none; }
-#btn-reorder.has-tip::after { bottom: auto; top: calc(100% + 5px); }
+#btn-reorder.has-tip::after { bottom: auto; top: calc(100% + 5px); left: auto; right: 0; transform: none; font-weight: 400; }
 
 /* ===================== PAGE-SPECIFIC ===================== */
 .height-quick-btn {
@@ -537,7 +537,7 @@ table th.p-2\.5, table td.p-2\.5 { padding: 17px 10px !important; }
                 <button class="btn-link" onclick="openBlueprintModal('modal-add-documents')" id="btn-add-doc" style="height:32px;font-size:12px">
                   <i class="fa-solid fa-plus text-xs"></i> Add Document
                 </button>
-                <button class="btn-link has-tip" data-tip="Reorder pages — drag to rearrange, auto-renumbers" onclick="enterReorderMode()" id="btn-reorder" style="height:32px;font-size:12px">
+                <button class="btn-link has-tip" data-tip="Drag to reorder pages. Numbers update automatically." onclick="enterReorderMode()" id="btn-reorder" style="height:32px;font-size:12px">
                   <i class="fa-solid fa-arrows-up-down text-xs"></i> Reorder Pages
                 </button>
               </span>
