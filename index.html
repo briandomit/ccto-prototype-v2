@@ -3317,6 +3317,12 @@ function selectScale(pxPerFt, label) {
   state.drawingScale = pxPerFt;
   var lbl = document.getElementById('scale-label');
   if (lbl) lbl.textContent = label;
+  var btn = document.getElementById('btn-scale');
+  if (btn) {
+    btn.style.background = '#fff';
+    btn.style.border = '1.5px solid var(--neutral-300)';
+    btn.style.color = 'var(--neutral-600)';
+  }
   document.getElementById('scale-dropdown').style.display = 'none';
 }
 
