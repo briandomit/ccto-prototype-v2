@@ -305,6 +305,8 @@ table th.p-2\.5, table td.p-2\.5 { padding: 17px 10px !important; }
 .folder-item.sub { padding-left: 48px; }
 .drag-over-top { border-top: 3px solid var(--primary-500) !important; }
 .drag-over-bottom { border-bottom: 3px solid var(--primary-500) !important; }
+.project-nav-row:hover .row-nav-chevron { opacity: 1 !important; }
+.doc-nav-row:hover .row-nav-chevron { opacity: 1 !important; }
 .new-badge { background: var(--primary-500); color: var(--neutral-0); font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 30px; margin-right: 8px; display: inline-block; vertical-align: middle; }
 .tab-count-inactive { background: var(--neutral-200); color: var(--neutral-500); padding: 0 6px; }
 
@@ -534,7 +536,7 @@ table th.p-2\.5, table td.p-2\.5 { padding: 17px 10px !important; }
                 <button class="btn-link" onclick="openBlueprintModal('modal-add-documents')" id="btn-add-doc" style="height:32px;font-size:12px">
                   <i class="fa-solid fa-plus text-xs"></i> Add Document
                 </button>
-                <button class="btn-link" onclick="enterReorderMode()" id="btn-reorder" style="height:32px;font-size:12px">
+                <button class="btn-link has-tip" data-tip="Reorder pages — drag to rearrange, auto-renumbers" onclick="enterReorderMode()" id="btn-reorder" style="height:32px;font-size:12px">
                   <i class="fa-solid fa-arrows-up-down text-xs"></i> Reorder Pages
                 </button>
               </span>
@@ -702,7 +704,7 @@ table th.p-2\.5, table td.p-2\.5 { padding: 17px 10px !important; }
     <!-- Tab bar -->
     <div id="ep-tab-bar" class="flex items-center" style="border-bottom:1px solid var(--neutral-300)">
       <div class="flex-1 text-center cursor-pointer" style="padding:10px 0;font-size:14px;font-weight:500;color:var(--neutral-500)" id="cost-tab-catalog" onclick="switchCostTab('catalog')">Catalog</div>
-      <div class="flex-1 text-center cursor-pointer" style="padding:10px 0;font-size:14px;font-weight:600;color:var(--neutral-600);border-bottom:3px solid var(--primary-500)" id="cost-tab-cost" onclick="switchCostTab('cost')">Cost</div>
+      <div class="flex-1 text-center cursor-pointer" style="padding:10px 0;font-size:14px;font-weight:600;color:var(--neutral-600);border-bottom:3px solid var(--primary-500)" id="cost-tab-cost" onclick="switchCostTab('cost')">Cost<span id="cost-tab-lock-icon" style="display:none;margin-left:5px;font-size:11px;color:var(--neutral-400)" title="Available on Pro+"><i class="fa-solid fa-lock"></i></span></div>
       <div class="flex items-center gap-1 flex-shrink-0" style="padding:0 8px">
         <button class="icon-btn" title="Open in new tab" onclick="openEstimatingFullscreen()"><i class="fa-solid fa-up-right-from-square"></i></button>
         <button class="icon-btn" title="Close panel" onclick="toggleEstimatingPanel()"><i class="fa-solid fa-xmark"></i></button>
@@ -956,6 +958,7 @@ table th.p-2\.5, table td.p-2\.5 { padding: 17px 10px !important; }
       <div>
         <h2 class="text-lg font-bold text-body-dark" id="summary-project-name"></h2>
         <p class="text-[13px] font-normal text-secondary-text mt-1" id="summary-project-subtitle"></p>
+        <p class="text-[12px] font-normal mt-1" style="color:var(--neutral-400)">Shareable cost proposal — export or share with your client</p>
       </div>
       <div class="flex items-center gap-3 flex-shrink-0">
         <button class="btn-secondary" onclick="openExportModal('vendor')" title="Generate a vendor/subcontractor scope sheet">Export to Vendor</button>
@@ -1443,13 +1446,13 @@ function renderProjectsTable() {
   }
   // #1: ondblclick navigates to documents; #2: NEW badge on LEFT; #3: wider column
   tbody.innerHTML = filtered.map(p => `
-    <tr class="table-row" ondblclick="navigateToDocuments(${p.id})" style="cursor:pointer">
+    <tr class="table-row project-nav-row" ondblclick="navigateToDocuments(${p.id})" onclick="navigateToDocuments(${p.id})" style="cursor:pointer;position:relative">
       <td class="table-cell" style="color:#1C1E21;font-weight:500">${state.newProjectAdded && p.isNew ? '<span class="new-badge">NEW</span>' : ''}${p.number}</td>
-      <td class="table-cell">${p.name}</td>
+      <td class="table-cell"><span class="project-name-link" style="color:var(--primary-500);cursor:pointer">${p.name}</span></td>
       <td class="table-cell">${p.assigned}</td>
       <td class="table-cell">${p.bidDate}</td>
       <td class="table-cell">${p.location}</td>
-      <td class="p-2.5"><div class="meatball" role="button" aria-label="More options" onclick="event.stopPropagation();showProjectMenu(event, ${p.id})"><i class="fa-solid fa-ellipsis-vertical"></i></div></td>
+      <td class="p-2.5" style="white-space:nowrap"><span class="row-nav-chevron" style="color:var(--neutral-400);font-size:18px;opacity:0;transition:opacity 120ms ease;margin-right:4px">&#8250;</span><div class="meatball" role="button" aria-label="More options" onclick="event.stopPropagation();showProjectMenu(event, ${p.id})"><i class="fa-solid fa-ellipsis-vertical"></i></div></td>
     </tr>
   `).join('');
 }
@@ -1500,12 +1503,14 @@ function renderDocumentsTable() {
     return;
   }
   tbody.innerHTML = docs.map((d, i) => `
-    <tr class="table-row" draggable="${state.reorderMode}" data-doc-id="${d.id}" ondblclick="openDocumentViewer(findDocById('${d.id}'))"
+    <tr class="table-row doc-nav-row" draggable="${state.reorderMode}" data-doc-id="${d.id}"
+        ondblclick="openDocumentViewer(findDocById('${d.id}'))"
+        onclick="if(!event.target.closest('a,button,.meatball'))openDocumentViewer(findDocById('${d.id}'))"
         ${state.reorderMode ? `ondragstart="dragStart(event,'${d.id}')" ondragover="dragOver(event)" ondrop="dropRow(event)" ondragend="dragEnd(event)"` : ''}
-        style="cursor:pointer">
+        style="cursor:pointer;position:relative">
       <td class="table-cell" style="color:#1C1E21">${d.page}</td>
       <td class="table-cell" style="color:#1C1E21">${d.docNum}</td>
-      <td class="table-cell">${d.name}</td>
+      <td class="table-cell"><span style="color:var(--primary-500);cursor:pointer">${d.name}</span></td>
       <td class="text-right whitespace-nowrap" style="padding:10px 0 10px 10px">
         ${state.reorderMode
           ? `<div class="flex items-center justify-end gap-1">
@@ -1513,6 +1518,7 @@ function renderDocumentsTable() {
                <button class="text-muted hover:text-body-dark bg-transparent border-none cursor-pointer text-xs p-1" onclick="event.stopPropagation();moveRowDown('${d.id}')"><i class="fa-solid fa-chevron-down"></i></button>
              </div>`
           : `<div class="inline-actions flex items-center justify-end gap-5">
+               <span class="row-nav-chevron" style="color:var(--neutral-400);font-size:18px;opacity:0;transition:opacity 120ms ease;">&#8250;</span>
                <a href="#" class="text-muted hover:text-primary has-tip" data-tip="View Document" onclick="event.preventDefault();event.stopPropagation();openDocumentViewer(findDocById('${d.id}'))"><i class="fa-solid fa-file-pdf"></i></a>
                <a href="#" class="text-muted hover:text-primary has-tip" data-tip="Rename" onclick="event.preventDefault();event.stopPropagation();openRenameModal(findDocById('${d.id}'))"><i class="fa-solid fa-pen"></i></a>
                <a href="#" class="text-muted hover:text-primary has-tip" data-tip="Duplicate" onclick="event.preventDefault();event.stopPropagation();duplicateDocument(findDocById('${d.id}'))"><i class="fa-regular fa-copy"></i></a>
@@ -1679,6 +1685,10 @@ function renderEstimatingPanel() {
   var tabBar = document.getElementById('ep-tab-bar');
   var catalogEl = document.getElementById('cost-content-catalog');
   var costEl = document.getElementById('cost-content-cost');
+
+  // Show/hide lock icon on Cost tab based on plan tier
+  var costLockIcon = document.getElementById('cost-tab-lock-icon');
+  if (costLockIcon) costLockIcon.style.display = (state.userPlan === 'starter') ? 'inline' : 'none';
 
   if (emptyEl) emptyEl.style.display = 'none';
   if (tabBar) tabBar.style.display = 'none';
@@ -1993,12 +2003,6 @@ function renderCatalogTab(contextMeasurementId) {
         + '<input id="catalog-search-input" type="text" placeholder="Search assemblies..." value="' + (state.catalogSearch || '').replace(/"/g, '&quot;') + '" oninput="_onCatalogSearch(this.value)" class="input-field" style="height:36px;border-radius:6px;padding:0 12px 0 32px;font-size:13px">'
         + '</div></div>';
 
-  // -- Import Prices link --
-  html += '<div style="padding:0 16px 8px;flex-shrink:0;display:flex;justify-content:flex-end;margin-top:12px;margin-bottom:12px">'
-        + '<button class="btn-link" style="padding:0;height:auto;font-size:12px" onclick="openImportPricesModal()">'
-        + '<i class="fa-solid fa-file-arrow-up" style="font-size:10px"></i> Import Prices'
-        + '</button></div>';
-
   // -- Filter chips --
   html += '<div id="catalog-chips" style="padding:0 16px 8px;display:flex;gap:6px;flex-wrap:wrap;flex-shrink:0">';
   var chips = ['All', 'Drywall', 'ACT', 'Painting', 'Flooring'];
@@ -2011,7 +2015,22 @@ function renderCatalogTab(contextMeasurementId) {
   // -- Assembly list (scrollable) --
   html += '<div id="catalog-assembly-list" class="flex-1 overflow-y-auto" style="padding:8px 16px 0">';
   var items = _filteredAssemblies();
-  if (items.length === 0) {
+  var hasAssemblies = items.length > 0;
+
+  // -- Import Prices: secondary button when empty, link when assemblies exist --
+  html += '<div style="padding:0 0 8px;flex-shrink:0;display:flex;justify-content:flex-end;margin-bottom:8px">';
+  if (!hasAssemblies) {
+    html += '<button class="btn-secondary" style="height:32px;font-size:12px;padding:0 12px" onclick="openImportPricesModal()">'
+          + '<i class="fa-solid fa-file-arrow-up" style="font-size:10px"></i> Import Prices'
+          + '</button>';
+  } else {
+    html += '<button class="btn-link" style="padding:0;height:auto;font-size:12px" onclick="openImportPricesModal()">'
+          + '<i class="fa-solid fa-file-arrow-up" style="font-size:10px"></i> Import Prices'
+          + '</button>';
+  }
+  html += '</div>';
+
+  if (!hasAssemblies) {
     html += '<div style="padding:24px 0;text-align:center;font-size:13px;color:var(--neutral-400)">No matching assemblies</div>';
   } else {
     items.forEach(function(a) {
@@ -2157,7 +2176,8 @@ function renderCostTab() {
       }
     });
   });
-  var wasteParts = Object.keys(tradeWasteSummary).map(function(t) { return t.substring(0,2) + ': ' + tradeWasteSummary[t] + '%'; });
+  var _tradeFullNames = { Drywall: 'Drywall', ACT: 'ACT Ceiling', Painting: 'Painting', Flooring: 'Flooring' };
+  var wasteParts = Object.keys(tradeWasteSummary).map(function(t) { return (_tradeFullNames[t] || t) + ': ' + tradeWasteSummary[t] + '%'; });
 
   html += '<div class="flex-shrink-0" style="border-top:2px solid var(--neutral-300);padding:16px">';
   html += '<div class="ep-flex-between" style="margin-bottom:8px">'
@@ -2184,7 +2204,7 @@ function renderCostTab() {
         + '<button class="btn-secondary" style="flex:1;font-size:13px;text-align:center;justify-content:center;align-items:center;white-space:nowrap;width:100%" onclick="openExportModal(\'excel\')">'
         + 'Send to Excel'
         + '</button>'
-        + '<button class="btn-secondary" style="flex:1;font-size:13px;text-align:center;justify-content:center;align-items:center;white-space:nowrap;width:100%" onclick="openEstimatingFullscreen()">'
+        + '<button class="btn-primary" style="flex:1;font-size:13px;text-align:center;justify-content:center;align-items:center;white-space:nowrap;width:100%" onclick="openEstimatingFullscreen()">'
         + 'Open Estimate'
         + '</button>'
         + '</div>'
@@ -3222,20 +3242,24 @@ function renderNav(activeItem) {
   html += '<img src="' + CC_LOGO + '" style="height:44px; width:auto; object-fit:contain">';
   html += '</div>';
   var items = [
-    { key: 'projects', label: 'Projects', icon: NAV_ICON_PROJECTS, onclick: "showScreen('projects')" },
-    { key: 'takeoff', label: 'Take off', icon: NAV_ICON_TAKEOFF, onclick: 'handleTakeoffNav()' },
-    { key: 'summary', label: 'Summary', icon: NAV_ICON_SUMMARY, onclick: 'handleSummaryNav()' }
+    { key: 'projects', label: 'Projects', icon: NAV_ICON_PROJECTS, onclick: "showScreen('projects')", tip: 'Projects' },
+    { key: 'takeoff', label: 'Takeoff', icon: NAV_ICON_TAKEOFF, onclick: 'handleTakeoffNav()', locked: state.userPlan === 'starter', tip: state.userPlan === 'starter' ? 'Available on Pro+' : 'Takeoff' },
+    { key: 'summary', label: 'Bid Summary', icon: NAV_ICON_SUMMARY, onclick: 'handleSummaryNav()', tip: 'Bid Summary' }
   ];
   items.forEach(function(item) {
     var cls = 'nav-item' + (item.key === activeItem ? ' selected' : '');
     var clickAttr = item.onclick ? ' onclick="' + item.onclick + '"' : '';
-    html += '<div class="' + cls + '"' + clickAttr + '>';
+    var tipAttr = item.tip ? ' title="' + item.tip + '"' : '';
+    html += '<div class="' + cls + '"' + clickAttr + tipAttr + ' style="position:relative">';
     if (item.icon) {
       html += '<img class="nav-icon" src="' + item.icon + '" style="width:22px;height:22px">';
     } else {
       html += '<i class="fa-solid fa-gear nav-icon"></i>';
     }
     html += '<span class="nav-label">' + item.label + '</span>';
+    if (item.locked) {
+      html += '<span style="position:absolute;top:4px;right:6px;font-size:9px;color:#CCECF9;opacity:0.85"><i class="fa-solid fa-lock"></i></span>';
+    }
     html += '</div>';
   });
   return html;
