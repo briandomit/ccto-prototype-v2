@@ -1452,7 +1452,7 @@ function renderProjectsTable() {
       <td class="table-cell">${p.assigned}</td>
       <td class="table-cell">${p.bidDate}</td>
       <td class="table-cell">${p.location}</td>
-      <td class="p-2.5" style="white-space:nowrap"><span class="row-nav-chevron" style="color:var(--neutral-400);font-size:18px;opacity:0;transition:opacity 120ms ease;margin-right:4px">&#8250;</span><div class="meatball" role="button" aria-label="More options" onclick="event.stopPropagation();showProjectMenu(event, ${p.id})"><i class="fa-solid fa-ellipsis-vertical"></i></div></td>
+      <td class="p-2.5" style="white-space:nowrap;display:flex;align-items:center;justify-content:flex-end"><span class="row-nav-chevron" style="color:var(--neutral-400);font-size:18px;opacity:0;transition:opacity 120ms ease;margin-right:4px">&#8250;</span><div class="meatball" role="button" aria-label="More options" onclick="event.stopPropagation();showProjectMenu(event, ${p.id})"><i class="fa-solid fa-ellipsis-vertical"></i></div></td>
     </tr>
   `).join('');
 }
@@ -1507,7 +1507,7 @@ function renderDocumentsTable() {
         ondblclick="openDocumentViewer(findDocById('${d.id}'))"
         onclick="if(!event.target.closest('a,button,.meatball'))openDocumentViewer(findDocById('${d.id}'))"
         ${state.reorderMode ? `ondragstart="dragStart(event,'${d.id}')" ondragover="dragOver(event)" ondrop="dropRow(event)" ondragend="dragEnd(event)"` : ''}
-        style="cursor:pointer;position:relative">
+        style="cursor:pointer">
       <td class="table-cell" style="color:#1C1E21">${d.page}</td>
       <td class="table-cell" style="color:#1C1E21">${d.docNum}</td>
       <td class="table-cell"><span style="color:var(--primary-500);cursor:pointer">${d.name}</span></td>
