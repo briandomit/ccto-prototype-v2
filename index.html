@@ -1454,7 +1454,7 @@ function renderProjectsTable() {
       <td class="table-cell">${p.bidDate}</td>
       <td class="table-cell">${p.location}</td>
       <td class="text-right whitespace-nowrap" style="padding:10px 0 10px 10px">
-        <div class="inline-actions flex items-center justify-end gap-5">
+        <div class="inline-actions flex items-center justify-end" style="gap:24px">
           <span class="row-nav-chevron" style="color:var(--neutral-400);font-size:18px;opacity:0;transition:opacity 120ms ease;margin-right:4px">&#8250;</span>
           <a href="#" class="text-muted hover:text-primary has-tip" data-tip="View Documents" onclick="event.preventDefault();event.stopPropagation();_projAction(${p.id},'viewDocuments')"><i class="fa-solid fa-folder-open"></i></a>
           <a href="#" class="text-muted hover:text-primary has-tip" data-tip="Takeoff" onclick="event.preventDefault();event.stopPropagation();_projAction(${p.id},'takeoff')"><i class="fa-solid fa-ruler-combined"></i></a>
@@ -1527,7 +1527,7 @@ function renderDocumentsTable() {
                <button class="text-muted hover:text-body-dark bg-transparent border-none cursor-pointer text-xs p-1" onclick="event.stopPropagation();moveRowUp('${d.id}')"><i class="fa-solid fa-chevron-up"></i></button>
                <button class="text-muted hover:text-body-dark bg-transparent border-none cursor-pointer text-xs p-1" onclick="event.stopPropagation();moveRowDown('${d.id}')"><i class="fa-solid fa-chevron-down"></i></button>
              </div>`
-          : `<div class="inline-actions flex items-center justify-end gap-5">
+          : `<div class="inline-actions flex items-center justify-end" style="gap:24px">
                <span class="row-nav-chevron" style="color:var(--neutral-400);font-size:18px;opacity:0;transition:opacity 120ms ease;">&#8250;</span>
                <a href="#" class="text-muted hover:text-primary has-tip" data-tip="View Document" onclick="event.preventDefault();event.stopPropagation();openDocumentViewer(findDocById('${d.id}'))"><i class="fa-solid fa-file-pdf"></i></a>
                <a href="#" class="text-muted hover:text-primary has-tip" data-tip="Rename" onclick="event.preventDefault();event.stopPropagation();openRenameModal(findDocById('${d.id}'))"><i class="fa-solid fa-pen"></i></a>
