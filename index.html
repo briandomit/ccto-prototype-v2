@@ -313,7 +313,7 @@ table th.p-2\.5, table td.p-2\.5 { padding: 17px 10px !important; }
 /* ===================== NAVIGATION ===================== */
 .nav-item { width: 77px; height: 48px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; cursor: pointer; position: relative; border-radius: 4px; }
 .nav-item .nav-icon { font-size: 24px; color: #CCECF9; width: 22px; height: 22px; }
-.nav-item .nav-label { font-size: 11px; font-weight: 600; color: #CCECF9; }
+.nav-item .nav-label { font-size: 11px; font-weight: 600; color: #CCECF9; text-align: center; }
 .nav-item.selected { background: rgba(1,48,74,0.5); }
 .nav-item.selected::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; background: #00A1E0; border-radius: 2px; }
 .nav-item.selected .nav-icon, .nav-item.selected .nav-label { color: #fff; }
@@ -326,6 +326,7 @@ table th.p-2\.5, table td.p-2\.5 { padding: 17px 10px !important; }
 .has-tip::after { content: attr(data-tip); position: absolute; bottom: calc(100% + 5px); left: 50%; transform: translateX(-50%); background: var(--neutral-600); color: #fff; font-size: 11px; font-family: 'Montserrat', sans-serif; padding: 4px 8px; border-radius: 4px; white-space: nowrap; opacity: 0; pointer-events: none; transition: opacity 0ms; z-index: 100; }
 .has-tip:hover::after { opacity: 1; }
 .has-tip-right::after { left: auto; right: 0; transform: none; }
+#btn-reorder.has-tip::after { bottom: auto; top: calc(100% + 5px); }
 
 /* ===================== PAGE-SPECIFIC ===================== */
 .height-quick-btn {
@@ -473,8 +474,8 @@ table th.p-2\.5, table td.p-2\.5 { padding: 17px 10px !important; }
       <table class="w-full" id="projects-table">
         <thead>
           <tr class="border-b-2 border-body-dark">
-            <th class="table-header text-left p-2.5 w-[200px]">Project Number</th>
-            <th class="table-header text-left p-2.5 w-[300px]">Project Name</th>
+            <th class="table-header text-left p-2.5 w-[130px]">Project Number</th>
+            <th class="table-header text-left p-2.5 w-[200px]">Project Name</th>
             <th class="table-header text-left p-2.5 w-[180px]">Assigned to</th>
             <th class="table-header text-left p-2.5 w-[200px]">Bid date &amp; time</th>
             <th class="table-header text-left p-2.5">Location</th>
@@ -3260,7 +3261,7 @@ function avHover(el, show) {
 }
 
 function renderNav(activeItem) {
-  var html = '<div class="w-[77px] h-[50px] flex items-center justify-center mb-2">';
+  var html = '<div class="w-[77px] h-[50px] flex items-center justify-center">';
   html += '<img src="' + CC_LOGO + '" style="height:44px; width:auto; object-fit:contain">';
   html += '</div>';
   var items = [
